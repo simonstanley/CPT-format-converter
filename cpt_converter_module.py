@@ -381,7 +381,7 @@ def write_data(outfile, xy_slice, x_coord, y_coord, simple=False,
 
 def cpt_converter(loadpaths, savepath, constraints=None, simple=False):
     """
-    Load data, convert it and save.
+    Main function. Load data, convert it and save.
     
     """
     check_filepath(savepath)
