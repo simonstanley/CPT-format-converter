@@ -1,0 +1,210 @@
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>CPT Converter - User Guide</title>
+        <style>
+              body {font-family: sans-serif;
+                    padding-right: 20px;}
+              a {text-decoration: none;
+                 color: #0000B9;}
+              a:hover{color: #6868FF;
+                      cursor: pointer;}
+              table, th, td {border: 1px solid black;
+                             border-collapse: collapse;}
+              th,td {padding: 10px;
+                     vertical-align: top;}
+              .content {padding: 5px;}
+              .pointless_list {list-style-type: none;
+                               padding-left: 0px;
+                               margin: 0px;}
+              .inline {padding-left: 10px;
+                       margin: 20px;}
+              .code_text {font-family: monospace;
+                          font-size: 15}
+              #content_head {font-size: 25;
+                             padding: 4px;}
+              #sidebar {border: 2px solid;
+                        position: fixed;
+                        padding: 10px;}
+              #main {padding-left: 240px;}
+        </style>
+    </head>
+
+    <body>
+        <div id="sidebar">
+            <ul class="pointless_list" style="font-size:18;">
+                <li id="content_head">Contents</li>
+                <li class="content"><a href="#intro">Introduction</a></li>
+                <li class="content"><a href="#get_converter">Getting CPT converter</a></li>
+                <li class="content"><a href="#get_iris">Getting Python/Iris</a></li>
+                <li class="content"><a href="#run_converter">Running the converter</a></li>
+                <li class="content"><a href="#further_guide">Further guidance</a>
+                    <ul style="padding-left:20px;">
+                        <li class="content"><a href="#merge_files">Merging files</a></li>
+                        <li class="content"><a href="#avaiable_vars">Available variables</a></li>
+                        <li class="content"><a href="#using_code">Integrating the code</a></li>
+                        <li class="content"><a href="#set_up">Improve set up</a></li>
+                        <li class="content"><a href="#iris">Iris</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+
+        <div id="main">
+
+            <h1>CPT converter - User guide</h1>
+
+            <h2 id="intro">Introduction</h2>
+                <p>The CPT converter tool performs a single task; it converts NetCDF files in CPT format.
+                It will also handle .pp and .grib files but this guide will always refer to NetCDFs.
+                This user guide explains how to get the converter running and how to use it.
+                The tool is written in Python 2.7 and relies on a module called Iris, both of which are simple to <a href="#get_iris">install</a>.
+                </p><br>
+
+            <h2 id="get_converter">Getting CPT converter</h2>
+                <p>The converter code can be downloaded from <a href="https://github.com/simonstanley/CPT-format-converter" target="_blank">GitHub</a>.
+                To simply get the code, click the button near the bottom right of the screen that says "Download Zip".
+                Once file has downloaded, unzip it. This should extract 4 files:
+                <ul>
+                    <li><b>cpt_converter.py</b></li>
+                    <li><b>cpt_converter_module.py</b></li>
+                    <li><b>cpt_converter_guide.html</b> - this guide for the browser</li>
+                    <li><b>extras/</b> - a folder containing <a href="#merge_files">file_merger.py</a> and <a href="#avaiable_vars">inspect_variables.py</a>.
+                    Follow the links for more on those, but for now, they do not matter.</li>
+                </ul>
+                If you would like to develop the code, please clone or fork it and your contributions will be very welcome.
+                </p><br>
+
+            <h2 id="get_iris">Getting Python/Iris</h2>
+                <p>As mentioned, the converter is written in Python and requires a module called 'Iris'.
+                <i>More information on what Iris is can be found in the <a href="#iris">Further guidance</a> section.</i></p>
+                <p>If you don't have Python already, don't worry, when you install Iris, Python (and all other necessery modules) is installed with it.
+                This full installation is performed by a package called 'Conda'.</p>
+                <p>The first step is therefore to get Conda. Conda can be downloaded from <a href="http://conda.pydata.org/miniconda.html" target="_blank">this website</a>.
+                At the top of the Conda page, click the link which refers to your operating system in the top row, for Python 2.7.</p>
+                <p><i>Note, if using a Linux machine, the downloaded file must be executed in a bash terminal to implement the install.</i></p><br>
+
+            <h2 id="run_converter">Running the converter</h2>
+                <p>The converter is run using the command prompt (for windows) or terminal (for mac and linux).
+                First go to the directory of the converter code, this is the directory where we unzipped the downloaded file.
+                See <a href="#get_converter">above</a>.</p>
+                <p class="inline">Example:</p>
+                <p class="inline code_text">cd /Users/username/Documents/CPT-format-converter/</p>
+                <p>To run the converter, use the command:</p>
+                <p class="inline code_text">python cpt_converter.py <i>filename savename -variable</i></p>
+                <p><i>Note, use the command </i><font class="code_text">python2.7 </font><i>instead of just </i><font class="code_text">python </font></i>for mac and linux.</i></p>
+
+                <table>
+                    <tr>
+                        <th colspan="2">Arguments</th>
+                    </tr>
+                    <tr>
+                        <td><i>filename</i></td>
+                        <td>The full file path and filename of the NetCDF file to be converted.</td>
+                    </tr>
+                    <tr>
+                        <td><i>savename</i></td>
+                        <td>The full file path and filename for the resulting CPT format file*.</td>
+                    </tr>
+                    <tr>
+                        <td><i>variable<br>(optional)</i></td>
+                        <td>Within a NetCDF file, there can be numerous meteorological variables. To extract and convert just one of these variables, it can be given as a constraint.
+                        See <a href="#avaiable_vars">Available variables</a> for details on seeing which variables are available.</td>
+                    </tr>
+                    <tr>
+                        <td><i>-s<br>(optional)</i></td>
+                        <td>Use -s to convert file in simple mode. Simple mode removes all metadata tags expect those necessary (i.e. dates).</td>
+                    </tr>
+                </table>
+                <p>Use the command <font class="code_text">python cpt_converter.py -h </font> for more help.</p>
+                <p class="inline">Example use (for windows):</p>
+                <p class="inline code_text">python cpt_converter.py /path/to/loadfile.nc /path/to/savefile.tsv air_temperature</p>
+                <p>The resulting file can then be opened with CPT in the normal way.</p>
+                <p>*<i>Note, the converted file is a .tsv file, however any extension can be used (or none at all) as CPT will try to read any file you ask it to.</i></p>
+                <br>
+
+
+            <h1 id="further_guide">Further guidance</h1>
+                <p>The above sections are all you need to install and run the converter.
+                However, the following sections go into the practicalities of using the converter and will help your understanding and ease of use.
+                </p><br>
+
+            <h2 id="merge_files">Merging files</h2>
+                <p>It is important to remember that the converter tool is separate from CPT itself.
+                The tool will attempt to convert the contents of any given NetCDF file and the output will be readable by CPT.
+                However, the content may not be appropriate for CPT to make sense of.</p>
+                <p>For example, the original NetCDF file will quite likely contain data from a single model run.
+                This will convert with no problems, but CPT can make no use of the information.
+                In a typical circumstance, CPT wants a file which contains data on numerous years and with numerous model members (model runs).
+                To achieve this the NetCDF files with the relevant information must be merged, and then converted.</p>
+                <p>This merging step can be done using the file_merger.py tool found in the 'extras' folder.
+                To use the merger tool, first go into the 'extras' directory.</p>
+                <p class="inline">Example:</p>
+                <p class="inline code_text">cd /Users/username/Documents/CPT-format-converter/extras/</p>
+                <p>To run the merger tool, use the command:</p>
+                <p class="inline code_text">python file_merger.py <i>filenames savename</i></p>
+                <p><i>Note, use the command </i><font class="code_text">python2.7 </font><i>instead of just </i><font class="code_text">python </font></i>for mac and linux.</i></p>
+                <table>
+                    <tr>
+                        <th colspan="2">Arguments</th>
+                    </tr>
+                    <tr>
+                        <td><i>filenames</i></td>
+                        <td>The full file path and filename of the NetCDF files to be merged.</td>
+                    </tr>
+                    <tr>
+                        <td><i>savename</i></td>
+                        <td>The full file path and filename for the resulting merged file.</td>
+                    </tr>
+                </table>
+                <p>Use the command <font class="code_text">python file_merger.py -h </font> for more help.</p>
+                <p class="inline">Example use (for windows):</p>
+                <p class="inline code_text">python file_merger.py /path/to/file1.nc /path/to/file2.nc /path/to/file3.nc /path/to/mergedfile.nc</p>
+                <p><i>Note, any number of filenames can be specified, so long as the savename comes last.</i></p>
+                <p>The output file can then be used with the CPT converter tool.</p>
+                <br>
+
+            <h2 id="avaiable_vars">Available variables</h2>
+                <p>When using the converter, there is an optional argument to constrain what is converted to only the meteorological variable you want to look at.
+                To do this, you need to see exactly what variables are in a NetCDF file to see what can be extracted.</p>
+                <p>In the 'extras' folder there is a tool called inspect_variables.py, this will list all the variable names avaiable within a NetCDF file.
+                To use the inspecter tool, first go into the 'extras' directory.</p>
+                <p class="inline">Example:</p>
+                <p class="inline code_text">cd /Users/username/Documents/CPT-format-converter/extras/</p>
+                <p>To run the merger tool, use the command:</p>
+                <p class="inline code_text">python inspect_variables.py <i>filename</i></p>
+                <p><i>Note, use the command </i><font class="code_text">python2.7 </font><i>instead of just </i><font class="code_text">python </font></i>for mac and linux.</i></p>
+                <table>
+                    <tr>
+                        <th colspan="2">Arguments</th>
+                    </tr>
+                    <tr>
+                        <td><i>filename</i></td>
+                        <td>The full file path and filename of the NetCDF file to be inspected.</td>
+                    </tr>
+                </table>
+                <p>Use the command <font class="code_text">python inspect_variables.py -h </font> for more help.</p>
+                <p class="inline">Example use (for windows):</p>
+                <p class="inline code_text">python inspect_variables.py /path/to/example_file.nc</p>
+                <p>The results are printed to the screen.</p>
+                <br>
+
+            <h2 id="using_code">Integrating the code</h2>
+                <p>The code which performs the convertion is the file <i>cpt_converter_module.py</i>.
+                If wanting to connect the code with other modules, use this file.
+                There is a function within called <i>cpt_converter</i> which takes the same arguments as the command line execution.
+                Import this function from <i>cpt_converter_module.py</i> to use.
+                </p><br>
+
+            <h2 id="iris">Iris</h2>
+                <p>Iris is an open source Python module for loading, processing and analysising meteorological data.
+                See the <a href="http://scitools.org.uk/iris/docs/latest/index.html" target="_blank">Iris homepage</a> for more information.
+                </p><br>
+
+      </div>
+    </body>
+</html>
