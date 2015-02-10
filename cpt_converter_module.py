@@ -57,6 +57,13 @@ def cube_time_converter(time, time_unit):
         converted_time = time_unit.date2num(time)
     else:
         converted_time = time_unit.num2date(time)
+        # Convert to proper datetime so operations work.
+        converted_time = datetime.datetime(converted_time.year, 
+                                           converted_time.month, 
+                                           converted_time.day,
+                                           converted_time.hour,
+                                           converted_time.minute,
+                                           converted_time.second)    
     return converted_time
 
 def iso_time_converter(time):
