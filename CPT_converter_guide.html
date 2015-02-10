@@ -29,7 +29,7 @@
               #sidebar {border: 2px solid;
                         position: fixed;
                         padding: 10px;}
-              #main {padding-left: 240px;}
+              #main {padding-left: 15%;}
         </style>
     </head>
 
@@ -46,7 +46,6 @@
                         <li class="content"><a href="#merge_files">Merging files</a></li>
                         <li class="content"><a href="#avaiable_vars">Available variables</a></li>
                         <li class="content"><a href="#using_code">Integrating the code</a></li>
-                        <li class="content"><a href="#set_up">Improve set up</a></li>
                         <li class="content"><a href="#iris">Iris</a></li>
                     </ul>
                 </li>
@@ -124,7 +123,9 @@
                 <p class="inline">Example use (for windows):</p>
                 <p class="inline code_text">python cpt_converter.py /path/to/loadfile.nc /path/to/savefile.tsv air_temperature</p>
                 <p>The resulting file can then be opened with CPT in the normal way.</p>
-                <p>*<i>Note, the converted file is a .tsv file, however any extension can be used (or none at all) as CPT will try to read any file you ask it to.</i></p>
+                <p>*<i>Note, the converted file is a .tsv file, however any extension can be used (or none at all) as CPT will try to read any file you ask it to.<br>
+                Also, wildcard expansions can be used for the filename e.g. <font class="code_text">loadfile_*.nc</font>. 
+                This will load and merge multiple files together.</i></p>
                 <br>
 
 

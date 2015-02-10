@@ -80,7 +80,7 @@ def iso_time_converter(time):
 def convert_time(time_coord):
     """
     Callback function to get iris cube time coordinate points, converted into 
-    ISO time format.
+    datetime format.
     
     Args:
     
@@ -417,6 +417,9 @@ def cpt_converter(loadpaths, savepath, constraints=None, simple=False):
                                                               y_coord)
                     slice_header_dict['T'] = sort_date(slice_header_dict['T'], 
                                                         timestep)
+                    if slice_header_dict.get('S'):
+                        slice_header_dict['S'] = sort_date(slice_header_dict['S'], 
+                                                           'daily')
                     write_slice_header(outfile, slice_header_dict)
                     write_data(outfile, xy_cube, x_coord, y_coord)
     
