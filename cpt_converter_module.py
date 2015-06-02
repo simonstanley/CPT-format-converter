@@ -115,6 +115,85 @@ def sort_date(date, timestep):
     elif timestep in ['monthly', 'seasonal', 'yearly']:
         return iso_time_converter(date)[:7]
 
+def confirm_add_attr(attr_name, attr_val):
+    """
+    
+    """
+    cont = raw_input("Confirm you would like to set the %s to"\
+                     " %s. y/n/cancel. " % (attr_name, attr_val))
+    if cont == "y":
+        return True
+    elif cont == "n":
+        return False
+    elif cont == "cancel":
+        return None
+    else:
+        print "Invalid response. Please type 'y', 'n' or 'cancel'."
+        confirm_add_attr(attr_name, attr_val)
+
+def add_field_name(cube):
+    """
+    
+    """
+    name = raw_input("Type the name:")
+    confirm_name = confirm_add_attr("field_name", name)
+    if confirm_name is True:
+        cube.long_name = name
+        return cube
+    elif confirm_name is False:
+        add_field_name(cube)
+    elif confirm_name is None:
+        return cube
+
+def add_units(cube):
+    """
+    
+    """
+    units = raw_input("Type the units:")
+    confirm_units = confirm_add_attr("units", units)
+    if confirm_units is True:
+        try:
+            cube.units = units
+        except ValueError:
+            print "%s are not valid units." % units
+        return cube
+    elif confirm_units is False:
+        add_units(cube)
+    elif confirm_units is None:
+        return cube
+
+def ask_to_add_attribute(attribute):
+    """
+    
+    """
+    add_name = raw_input("This data have no {attr}. Would you like to add it?"\
+                         " y/n. ".format(attr=attribute))
+    if add_name in ["y", "yes"]:
+        return True
+    elif add_name in ["n", "no"]:
+        return False
+    else:
+        print "Invalid response. Please type 'y' or 'n'."
+        ask_to_add_attribute(attribute)
+    
+
+def check_header_metadata(cube):
+    """
+    
+    """
+    if cube.name() == "unknown":
+        add_in_name = ask_to_add_attribute("field name")
+        if add_in_name:
+            cube = add_field_name(cube)
+    
+    if cube.units == "unknown":
+        add_in_units = ask_to_add_attribute("units")
+        if add_in_units:
+            cube = add_units(cube)
+    
+    return cube
+        
+
 def detect_timestep(cube):
     """
     Work out the time step of the data.
@@ -226,6 +305,7 @@ def look_for_coord(cube, coord_names, axis=None):
         raise UserWarning('Could not find suitable %scoordinate.' % axis)
     else:
         return coord
+    
 
 def get_xy_coords(cube):
     """
@@ -399,6 +479,7 @@ def cpt_converter(loadpaths, savepath, constraints=None, simple=False):
     if simple: 
         with open(savepath, 'a') as outfile:
             for cube in data_cubelist:
+                cube = check_header_metadata(cube)
                 timestep = detect_timestep(cube)
                 x_coord, y_coord = get_xy_coords(cube)
                 cube = make_coords_dimensions(cube, x_coord, y_coord)
@@ -414,6 +495,7 @@ def cpt_converter(loadpaths, savepath, constraints=None, simple=False):
             write_main_header(outfile, main_header_dict)
     
             for cube in data_cubelist:
+                cube = check_header_metadata(cube)
                 timestep = detect_timestep(cube)
                 x_coord, y_coord = get_xy_coords(cube)
                 cube = make_coords_dimensions(cube, x_coord, y_coord)
