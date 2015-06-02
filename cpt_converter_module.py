@@ -115,84 +115,30 @@ def sort_date(date, timestep):
     elif timestep in ['monthly', 'seasonal', 'yearly']:
         return iso_time_converter(date)[:7]
 
-def confirm_add_attr(attr_name, attr_val):
+def read_config_file(config_file):
     """
+    Place contents of config file into dictionary.
     
     """
-    cont = raw_input("Confirm you would like to set the %s to"\
-                     " %s. y/n/cancel. " % (attr_name, attr_val))
-    if cont == "y":
-        return True
-    elif cont == "n":
-        return False
-    elif cont == "cancel":
-        return None
-    else:
-        print "Invalid response. Please type 'y', 'n' or 'cancel'."
-        confirm_add_attr(attr_name, attr_val)
-
-def add_field_name(cube):
-    """
-    
-    """
-    name = raw_input("Type the name:")
-    confirm_name = confirm_add_attr("field_name", name)
-    if confirm_name is True:
-        cube.long_name = name
-        return cube
-    elif confirm_name is False:
-        add_field_name(cube)
-    elif confirm_name is None:
-        return cube
-
-def add_units(cube):
-    """
-    
-    """
-    units = raw_input("Type the units:")
-    confirm_units = confirm_add_attr("units", units)
-    if confirm_units is True:
-        try:
-            cube.units = units
-        except ValueError:
-            print "%s are not valid units." % units
-        return cube
-    elif confirm_units is False:
-        add_units(cube)
-    elif confirm_units is None:
-        return cube
-
-def ask_to_add_attribute(attribute):
-    """
-    
-    """
-    add_name = raw_input("This data have no {attr}. Would you like to add it?"\
-                         " y/n. ".format(attr=attribute))
-    if add_name in ["y", "yes"]:
-        return True
-    elif add_name in ["n", "no"]:
-        return False
-    else:
-        print "Invalid response. Please type 'y' or 'n'."
-        ask_to_add_attribute(attribute)
-    
+    config_dict = {}
+    with open(config_file, "r") as infile:
+        for line in infile:
+            line = line.split(":")
+            assert len(line) == 2, "Bad config_file format."
+            config_dict[line[0]] = line[1].strip()
+    return config_dict
 
 def check_header_metadata(cube):
     """
+    Warn user if there is missing info.
     
-    """
+    """    
     if cube.name() == "unknown":
-        add_in_name = ask_to_add_attribute("field name")
-        if add_in_name:
-            cube = add_field_name(cube)
+        print "Warning, no field name found."
     
     if cube.units == "unknown":
-        add_in_units = ask_to_add_attribute("units")
-        if add_in_units:
-            cube = add_units(cube)
-    
-    return cube
-        
+        print "Warning, no units found."
+                
 
 def detect_timestep(cube):
     """
@@ -372,7 +318,7 @@ def get_main_header_metadata(cubelist):
     
     return header_dict
 
-def get_slice_header_dict(xy_slice, x_coord, y_coord):
+def get_slice_header_dict(xy_slice, x_coord, y_coord, config_file):
     """
     Get the specific header metadata which must be printed at the top of each 
     data chunk (xy slice of data).
@@ -410,7 +356,11 @@ def get_slice_header_dict(xy_slice, x_coord, y_coord):
         
     if hasattr(xy_slice.data, 'fill_value'):
         header_dict['missing'] = xy_slice.data.fill_value
-        
+
+    if config_file:
+        overwrite_dict = read_config_file(config_file)
+        header_dict.update(overwrite_dict)
+
     return header_dict
 
 def write_main_header(outfile, main_header_dict):
@@ -466,7 +416,7 @@ def write_data(outfile, xy_slice, x_coord, y_coord, simple=False,
     # Write the data underneath.
     numpy.savetxt(outfile, data, delimiter='\t')
 
-def cpt_converter(loadpaths, savepath, constraints=None, simple=False):
+def cpt_converter(loadpaths, savepath, constraints=None, config_file=None, simple=False):
     """
     Main function. Load data, convert it and save.
     
@@ -479,7 +429,6 @@ def cpt_converter(loadpaths, savepath, constraints=None, simple=False):
     if simple: 
         with open(savepath, 'a') as outfile:
             for cube in data_cubelist:
-                cube = check_header_metadata(cube)
                 timestep = detect_timestep(cube)
                 x_coord, y_coord = get_xy_coords(cube)
                 cube = make_coords_dimensions(cube, x_coord, y_coord)
@@ -495,7 +444,7 @@ def cpt_converter(loadpaths, savepath, constraints=None, simple=False):
             write_main_header(outfile, main_header_dict)
     
             for cube in data_cubelist:
-                cube = check_header_metadata(cube)
+                check_header_metadata(cube)
                 timestep = detect_timestep(cube)
                 x_coord, y_coord = get_xy_coords(cube)
                 cube = make_coords_dimensions(cube, x_coord, y_coord)
@@ -503,7 +452,7 @@ def cpt_converter(loadpaths, savepath, constraints=None, simple=False):
                 # slice converted and added to the outfile.
                 for xy_cube in cube.slices([x_coord.name(), y_coord.name()]):
                     slice_header_dict = get_slice_header_dict(xy_cube, x_coord, 
-                                                              y_coord)
+                                                              y_coord, config_file)
                     slice_header_dict['T'] = sort_date(slice_header_dict['T'], 
                                                         timestep)
                     if slice_header_dict.get('S'):
