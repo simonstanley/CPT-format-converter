@@ -15,7 +15,8 @@ parser.add_argument('savename', help='The full file path to where the '\
 parser.add_argument('variable', default=None, nargs='?', help='Optional. '\
                     'Convert only the given meteorological variable.')
 parser.add_argument('config_file', default=None, nargs='?', help='Optional. '\
-                    'A .txt configuration file can be used to overwrite cpt tags.')
+                    'A .txt configuration file can be used to overwrite or '\
+                    'add cpt tags.')
 parser.add_argument('-s', action='store_true', default=False, dest='simple',
                     help='Optional. Use simple formatting.')
 

@@ -115,6 +115,13 @@ def sort_date(date, timestep):
     elif timestep in ['monthly', 'seasonal', 'yearly']:
         return iso_time_converter(date)[:7]
 
+def raise_bad_config_format():
+    """
+    
+    """
+    raise UserWarning("Bad config_file format. Has to be format "\
+                      "cpt:name=value.")
+
 def read_config_file(config_file):
     """
     Place contents of config file into dictionary.
@@ -123,9 +130,16 @@ def read_config_file(config_file):
     config_dict = {}
     with open(config_file, "r") as infile:
         for line in infile:
-            line = line.split(":")
-            assert len(line) == 2, "Bad config_file format."
-            config_dict[line[0]] = line[1].strip()
+            line = line.split("=")
+            if len(line) != 2:
+                raise_bad_config_format()
+            tag_name = line[0]
+            tag_name = tag_name.split(":")
+            if len(tag_name) != 2:
+                raise_bad_config_format()
+            if tag_name[0] != "cpt":
+                raise_bad_config_format()            
+            config_dict[tag_name[1]] = line[1].strip()
     return config_dict
 
 def check_header_metadata(cube):
